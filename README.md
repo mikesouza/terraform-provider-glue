@@ -46,9 +46,25 @@ resource "glue_var_map" "example" {
   identifier = "my-map-id"
 
   entries = {
-    hello = "world"
     foo   = "bar"
+    hello = "world"
+    key1  = "value1"
+    key2  = "value2"
   }
+}
+
+data "glue_filter_map" "example" {
+  depends_on = ["glue_var_map.example"]
+
+  input = "${glue_var_map.example.entries}"
+
+  key = {
+    prefix = ["key"]
+  }
+}
+
+output "filtered_keys" {
+  value = "${data.glue_filter_map.example.output}"
 }
 
 data "glue_filter_jmespath" "example" {
@@ -56,7 +72,7 @@ data "glue_filter_jmespath" "example" {
   expression = "hello"
 }
 
-output "hello" {
+output "filtered_json" {
   value = "${data.glue_filter_jmespath.example.output}"
 }
 ```
